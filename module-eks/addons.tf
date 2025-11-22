@@ -1,17 +1,22 @@
 provider "helm" {
-    kubernetes {
-        host                   = aws_eks_cluster.eks.endpoint
-        cluster_ca_certificate = base64decode(aws_eks_cluster.eks.certificate_authority[0].data)
-        token                  = data.aws_eks_cluster_auth.eks.token
-    }
+  kubernetes = {
+    config_path = "~/.kube/config"
+  }
 }
+
+
 
 provider "kubernetes" {
   alias                  = "eks"
   host                   = aws_eks_cluster.eks.endpoint
   cluster_ca_certificate = base64decode(aws_eks_cluster.eks.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.eks.token
+  token                  = data.aws_eks_cluster_auth.cluster.token
 }
+
+data "aws_eks_cluster_auth" "cluster" {
+    name = aws_eks_cluster.eks.name
+}
+
 
 data "aws_eks_cluster_auth" "eks" {
     name = aws_eks_cluster.eks.name
@@ -37,18 +42,23 @@ data "aws_lb" "nginx_ingress" {
 }
 
 resource "helm_release" "cert_manager" {
-    name       = "cert-manager"
-    repository = "https://charts.jetstack.io"
-    chart      = "cert-manager"
-    version    = "1.14.5"
-    namespace  = "cert-manager"
-    create_namespace = true
-    set {
-        name  = "installCRDs"
-        value = "true"
+  name       = "cert-manager"
+  repository = "https://charts.jetstack.io"
+  chart      = "cert-manager"
+  version    = "1.14.5"
+  namespace  = "cert-manager"
+  create_namespace = true
+
+  set = [
+    {
+      name  = "installCRDs"
+      value = "true"
     }
-    depends_on = [ helm_release.nginx_ingress ]
+  ]
+
+  depends_on = [ helm_release.nginx_ingress ]
 }
+
 #==================================================
 
 resource "helm_release" "argocd" {

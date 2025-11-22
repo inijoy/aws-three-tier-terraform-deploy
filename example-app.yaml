@@ -45,10 +45,10 @@ spec:
   ingressClassName: external-nginx
   tls:
   - hosts:
-    - app.cloudwitches.online
-    secretName: app-cloudwitches-online
+    - app.hijoacloud.online
+    secretName: app-hijoacloud-online
   rules:
-  - host: app.cloudwitches.online
+  - host: app.hijoacloud.online
     http:
       paths:
       - path: /
