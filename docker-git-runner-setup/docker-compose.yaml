@@ -12,8 +12,9 @@ services:
       - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/ubuntu/runner-work:/home/runner/_work   # workflow data on host
-      - /home/ubuntu/runner-tmp:/tmp                  # temporary downloads on host
+      - runner-data:/home/runner       # Runner home
+      - /home/ubuntu/runner-kube:/home/runner/.kube  # Persist kubeconfig
 
 volumes:
   runner-data:
+
