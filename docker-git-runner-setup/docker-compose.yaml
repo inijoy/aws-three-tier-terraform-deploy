@@ -2,7 +2,6 @@ version: "3.8"
 
 services:
   github-runner:
-  
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,7 +12,8 @@ services:
       - .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - runner-work:/home/runner/_work
+      - /home/ubuntu/runner-work:/home/runner/_work   # workflow data on host
+      - /home/ubuntu/runner-tmp:/tmp                  # temporary downloads on host
 
 volumes:
-  runner-work:
+  runner-data:
